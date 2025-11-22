@@ -1,168 +1,599 @@
-<!DOCTYPE HTML>
-<!--
-	Road Trip by TEMPLATED
-	templated.co @templatedco
-	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
--->
-<html>
+<!DOCTYPE html>
+<html lang="en">
 	<head>
-		<title>Road Trip by TEMPLATED</title>
-		<meta charset="utf-8" />
+		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="stylesheet" href="assets/css/main.css" />
+		<title>SKY | Best of Sandy and Kaiwen</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet" />
+		<style>
+			:root {
+				--pink-050: #fff5f8;
+				--pink-100: #ffe4ec;
+				--pink-200: #ffcadf;
+				--pink-400: #ff90b2;
+				--pink-600: #f45c87;
+				--charcoal: #1f1a1c;
+				--cloud: #fff9fb;
+				--shadow-soft: 0 16px 45px rgba(244, 92, 135, 0.2);
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				font-family: 'Fredoka', 'Poppins', sans-serif;
+				background: radial-gradient(circle at top, var(--pink-050), #ffffff 45%, var(--pink-100));
+				color: var(--charcoal);
+				min-height: 100vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 2rem;
+			}
+
+			body::before,
+			body::after {
+				content: '';
+				position: fixed;
+				width: 360px;
+				height: 360px;
+				background: rgba(255, 190, 213, 0.5);
+				filter: blur(110px);
+				z-index: 0;
+			}
+
+			body::before {
+				top: -120px;
+				left: -140px;
+			}
+
+			body::after {
+				bottom: -120px;
+				right: -140px;
+			}
+
+			.sr-only {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				padding: 0;
+				margin: -1px;
+				overflow: hidden;
+				clip: rect(0, 0, 0, 0);
+				white-space: nowrap;
+				border: 0;
+			}
+
+			main {
+				position: relative;
+				z-index: 1;
+				width: min(960px, 100%);
+				background: rgba(255, 255, 255, 0.9);
+				border-radius: 36px;
+				box-shadow: var(--shadow-soft);
+				overflow: hidden;
+			}
+
+			.step-card {
+				display: none;
+				padding: clamp(2rem, 5vw, 3.5rem);
+				min-height: 520px;
+				flex-direction: column;
+				gap: 1.5rem;
+			}
+
+			.step-card.active {
+				display: flex;
+			}
+
+			h1,
+			h2,
+			h3,
+			h4 {
+				margin: 0;
+				color: var(--charcoal);
+			}
+
+			p {
+				margin: 0;
+				line-height: 1.6;
+			}
+
+			.eyebrow {
+				text-transform: uppercase;
+				letter-spacing: 0.2em;
+				font-size: 0.85rem;
+				color: var(--pink-600);
+				font-weight: 600;
+			}
+
+			.name-form {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 1rem;
+				align-items: center;
+			}
+
+			.text-input {
+				flex: 1 1 240px;
+				padding: 1rem 1.25rem;
+				border-radius: 999px;
+				border: 2px solid var(--pink-200);
+				background: var(--cloud);
+				font-size: 1rem;
+				transition: border 0.2s ease, box-shadow 0.2s ease;
+			}
+
+			.text-input:focus {
+				outline: none;
+				border-color: var(--pink-600);
+				box-shadow: 0 0 0 4px rgba(244, 92, 135, 0.1);
+			}
+
+			.btn {
+				border: none;
+				border-radius: 999px;
+				padding: 0.95rem 1.75rem;
+				font-size: 1rem;
+				font-weight: 600;
+				cursor: pointer;
+				transition: transform 0.18s ease, box-shadow 0.18s ease;
+				box-shadow: 0 10px 25px rgba(244, 92, 135, 0.25);
+			}
+
+			.btn:active {
+				transform: scale(0.92);
+			}
+
+			.btn-primary {
+				background: linear-gradient(120deg, var(--pink-600), var(--pink-400));
+				color: #fff;
+			}
+
+			.btn-ghost {
+				background: rgba(244, 92, 135, 0.1);
+				color: var(--pink-600);
+				box-shadow: none;
+			}
+
+			.hint-box {
+				min-height: 54px;
+				border-radius: 20px;
+				padding: 1rem 1.5rem;
+				background: rgba(255, 202, 223, 0.4);
+				color: var(--charcoal);
+				font-weight: 500;
+				opacity: 0;
+				transform: translateY(10px);
+				transition: opacity 0.2s ease, transform 0.2s ease;
+			}
+
+			.hint-box.visible {
+				opacity: 1;
+				transform: translateY(0);
+			}
+
+			.shake {
+				animation: shake 0.45s ease;
+			}
+
+			@keyframes shake {
+				0%, 100% {
+					transform: translateX(0);
+				}
+				20%, 60% {
+					transform: translateX(-8px);
+				}
+				40%, 80% {
+					transform: translateX(8px);
+				}
+			}
+
+			.traits-shell {
+				display: flex;
+				flex-direction: column;
+				gap: 1.5rem;
+			}
+
+			.traits-box {
+				background: var(--pink-050);
+				border-radius: 28px;
+				padding: 1.5rem;
+				max-height: 380px;
+				overflow-y: auto;
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+				gap: 0.75rem;
+			}
+
+			.traits-box::-webkit-scrollbar {
+				width: 6px;
+			}
+
+			.traits-box::-webkit-scrollbar-thumb {
+				background: var(--pink-400);
+				border-radius: 999px;
+			}
+
+			.trait-btn {
+				border-radius: 30px;
+				border: 2px solid rgba(244, 92, 135, 0.35);
+				padding: 0.85rem 1rem;
+				background: #fff;
+				color: var(--charcoal);
+				font-weight: 500;
+				cursor: pointer;
+				transition: transform 0.2s ease, border 0.2s ease, background 0.2s ease, color 0.2s ease;
+			}
+
+			.trait-btn:active {
+				transform: scale(0.93);
+			}
+
+			.trait-btn.good-selected {
+				background: linear-gradient(120deg, #8be4a6, #4ccf87);
+				border-color: #4ccf87;
+				color: #0f3b25;
+				box-shadow: 0 10px 25px rgba(76, 207, 135, 0.4);
+				cursor: default;
+			}
+
+			.trait-btn.locked {
+				pointer-events: none;
+			}
+
+			.trait-btn.bad-alert {
+				background: #ffd5d5;
+				border-color: #ff7a7a;
+				color: #a80032;
+				animation: wobble 0.6s ease;
+			}
+
+			@keyframes wobble {
+				0% {
+					transform: translateX(0);
+				}
+				25% {
+					transform: translateX(-6px) rotate(-1deg);
+				}
+				50% {
+					transform: translateX(6px) rotate(1deg);
+				}
+				100% {
+					transform: translateX(0);
+				}
+			}
+
+			.trait-counter {
+				font-size: 1.15rem;
+				font-weight: 600;
+				color: var(--pink-600);
+			}
+
+			.success-note {
+				min-height: 24px;
+				font-size: 0.95rem;
+				color: var(--charcoal);
+			}
+
+			.final-hero {
+				display: flex;
+				flex-direction: column;
+				gap: 1.25rem;
+				text-align: center;
+			}
+
+			.timer-card {
+				background: var(--pink-050);
+				border-radius: 32px;
+				padding: 1.5rem;
+				box-shadow: inset 0 0 0 2px rgba(244, 92, 135, 0.08);
+			}
+
+			.timer-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+				gap: 1rem;
+			}
+
+			.timer-piece {
+				background: #fff;
+				border-radius: 24px;
+				padding: 1rem;
+				box-shadow: var(--shadow-soft);
+				text-align: center;
+			}
+
+			.timer-value {
+				font-size: 2rem;
+				font-weight: 600;
+			}
+
+			.timeline {
+				display: flex;
+				flex-direction: column;
+				gap: 1rem;
+			}
+
+			.timeline-track {
+				position: relative;
+				background: #fff;
+				border-radius: 32px;
+				padding: 2rem;
+				min-height: 220px;
+				box-shadow: 0 20px 40px rgba(31, 26, 28, 0.08);
+			}
+
+			.timeline-track::before {
+				content: '';
+				position: absolute;
+				left: 50%;
+				top: 2rem;
+				bottom: 2rem;
+				width: 4px;
+				background: rgba(244, 92, 135, 0.2);
+				transform: translateX(-50%);
+			}
+
+			.timeline-placeholder {
+				text-align: center;
+				font-weight: 500;
+				color: rgba(31, 26, 28, 0.7);
+				margin-top: 1rem;
+			}
+
+			.timeline-dots {
+				display: flex;
+				justify-content: space-between;
+				position: relative;
+				z-index: 1;
+			}
+
+			.timeline-dot {
+				width: 22px;
+				height: 22px;
+				border-radius: 50%;
+				background: var(--pink-600);
+				box-shadow: 0 0 0 8px rgba(244, 92, 135, 0.12);
+				cursor: pointer;
+				transition: transform 0.2s ease;
+			}
+
+			.timeline-dot:active {
+				transform: scale(0.85);
+			}
+
+			@media (max-width: 640px) {
+				.step-card {
+					padding: 2rem 1.5rem;
+				}
+				.name-form {
+					flex-direction: column;
+				}
+				.text-input {
+					width: 100%;
+				}
+			}
+		</style>
 	</head>
 	<body>
-
-		<!-- Header -->
-			<header id="header">
-				<div class="logo"><a href="index.html">Road Trip <span>by TEMPLATED</span></a></div>
-				<a href="#menu"><span>Menu</span></a>
-			</header>
-
-		<!-- Nav -->
-			<nav id="menu">
-				<ul class="links">
-					<li><a href="index.html">Home</a></li>
-					<li><a href="generic.html">Generic</a></li>
-					<li><a href="elements.html">Elements</a></li>
-				</ul>
-			</nav>
-
-		<!-- Banner -->
-		<!--
-			Note: To show a background image, set the "data-bg" attribute below
-			to the full filename of your image. This is used in each section to set
-			the background image.
-		-->
-			<section id="banner" class="bg-img" data-bg="banner.jpg">
-				<div class="inner">
-					<header>
-						<h1>This is Road Trip</h1>
-					</header>
+		<main>
+			<section id="intro-step" class="step-card active" aria-live="polite">
+				<div>
+					<p class="eyebrow">welcome</p>
+					<h1>Please enter the passcode to enter site</h1>
+					<p>Only the right person knows</p>
 				</div>
-				<a href="#one" class="more">Learn More</a>
+				<form class="name-form" id="name-form">
+					<label class="sr-only" for="secret-input">Hidden prompt</label>
+					<input id="secret-input" class="text-input" type="text" placeholder="pound your keys here" autocomplete="off" />
+					<button class="btn btn-primary" type="submit">Enter</button>
+				</form>
+				<div id="hint-box" class="hint-box" role="status" aria-live="assertive"></div>
 			</section>
 
-		<!-- One -->
-			<section id="one" class="wrapper post bg-img" data-bg="banner2.jpg">
-				<div class="inner">
-					<article class="box">
-						<header>
-							<h2>Nibh non lobortis mus nibh</h2>
-							<p>01.01.2017</p>
-						</header>
-						<div class="content">
-							<p>Scelerisque enim mi curae erat ultricies lobortis donec velit in per cum consectetur purus a enim platea vestibulum lacinia et elit ante scelerisque vestibulum. At urna condimentum sed vulputate a duis in senectus ullamcorper lacus cubilia consectetur odio proin sociosqu a parturient nam ac blandit praesent aptent. Eros dignissim mus mauris a natoque ad suspendisse nulla a urna in tincidunt tristique enim arcu litora scelerisque eros suspendisse.</p>
-						</div>
-						<footer>
-							<a href="generic.html" class="button alt">Learn More</a>
-						</footer>
-					</article>
+			<section id="traits-step" class="step-card" aria-live="polite">
+				<div>
+					<p class="eyebrow">checkpoint 2</p>
+					<h2>But do you know Sandy's best traits?</h2>
+					<p class="trait-counter" id="trait-counter">0 / 10 selected</p>
+					<p class="success-note" id="trait-success"></p>
 				</div>
-				<a href="#two" class="more">Learn More</a>
-			</section>
-
-		<!-- Two -->
-			<section id="two" class="wrapper post bg-img" data-bg="banner5.jpg">
-				<div class="inner">
-					<article class="box">
-						<header>
-							<h2>Mus elit a ultricies at</h2>
-							<p>12.21.2016</p>
-						</header>
-						<div class="content">
-							<p>Scelerisque enim mi curae erat ultricies lobortis donec velit in per cum consectetur purus a enim platea vestibulum lacinia et elit ante scelerisque vestibulum. At urna condimentum sed vulputate a duis in senectus ullamcorper lacus cubilia consectetur odio proin sociosqu a parturient nam ac blandit praesent aptent. Eros dignissim mus mauris a natoque ad suspendisse nulla a urna in tincidunt tristique enim arcu litora scelerisque eros suspendisse.</p>
-						</div>
-						<footer>
-							<a href="generic.html" class="button alt">Learn More</a>
-						</footer>
-					</article>
-				</div>
-				<a href="#three" class="more">Learn More</a>
-			</section>
-
-		<!-- Three -->
-			<section id="three" class="wrapper post bg-img" data-bg="banner4.jpg">
-				<div class="inner">
-					<article class="box">
-						<header>
-							<h2>Varius a cursus aliquet</h2>
-							<p>11.11.2016</p>
-						</header>
-						<div class="content">
-							<p>Scelerisque enim mi curae erat ultricies lobortis donec velit in per cum consectetur purus a enim platea vestibulum lacinia et elit ante scelerisque vestibulum. At urna condimentum sed vulputate a duis in senectus ullamcorper lacus cubilia consectetur odio proin sociosqu a parturient nam ac blandit praesent aptent. Eros dignissim mus mauris a natoque ad suspendisse nulla a urna in tincidunt tristique enim arcu litora scelerisque eros suspendisse.</p>
-						</div>
-						<footer>
-							<a href="generic.html" class="button alt">Learn More</a>
-						</footer>
-					</article>
-				</div>
-				<a href="#four" class="more">Learn More</a>
-			</section>
-
-		<!-- Four -->
-			<section id="four" class="wrapper post bg-img" data-bg="banner3.jpg">
-				<div class="inner">
-					<article class="box">
-						<header>
-							<h2>Luctus blandit mi lectus in nascetur</h2>
-							<p>10.30.2016</p>
-						</header>
-						<div class="content">
-							<p>Scelerisque enim mi curae erat ultricies lobortis donec velit in per cum consectetur purus a enim platea vestibulum lacinia et elit ante scelerisque vestibulum. At urna condimentum sed vulputate a duis in senectus ullamcorper lacus cubilia consectetur odio proin sociosqu a parturient nam ac blandit praesent aptent. Eros dignissim mus mauris a natoque ad suspendisse nulla a urna in tincidunt tristique enim arcu litora scelerisque eros suspendisse.</p>
-						</div>
-						<footer>
-							<a href="generic.html" class="button alt">Learn More</a>
-						</footer>
-					</article>
+				<div class="traits-shell">
+					<p>Tap through the list.</p>
+					<div class="traits-box" id="traits-box"></div>
 				</div>
 			</section>
 
-		<!-- Footer -->
-			<footer id="footer">
-				<div class="inner">
-
-					<h2>Contact Me</h2>
-
-					<form action="#" method="post">
-
-						<div class="field half first">
-							<label for="name">Name</label>
-							<input name="name" id="name" type="text" placeholder="Name">
+			<section id="main-step" class="step-card" aria-live="polite">
+				<div class="final-hero">
+					<p class="eyebrow">Home</p>
+					<h2>SKY · Best of Sandy &amp; Kaiwen</h2>
+					<p>Since November 27, 2024 · 4:23 PM PDT</p>
+				</div>
+				<div class="timer-card">
+					<div class="timer-grid">
+						<div class="timer-piece">
+							<div class="timer-value" id="timer-days">0</div>
+							<div>days</div>
 						</div>
-						<div class="field half">
-							<label for="email">Email</label>
-							<input name="email" id="email" type="email" placeholder="Email">
+						<div class="timer-piece">
+							<div class="timer-value" id="timer-hours">0</div>
+							<div>hours</div>
 						</div>
-						<div class="field">
-							<label for="message">Message</label>
-							<textarea name="message" id="message" rows="6" placeholder="Message"></textarea>
+						<div class="timer-piece">
+							<div class="timer-value" id="timer-minutes">0</div>
+							<div>minutes</div>
 						</div>
-						<ul class="actions">
-							<li><input value="Send Message" class="button alt" type="submit"></li>
-						</ul>
-					</form>
-
-					<ul class="icons">
-						<li><a href="#" class="icon round fa-twitter"><span class="label">Twitter</span></a></li>
-						<li><a href="#" class="icon round fa-facebook"><span class="label">Facebook</span></a></li>
-						<li><a href="#" class="icon round fa-instagram"><span class="label">Instagram</span></a></li>
-					</ul>
-
-					<div class="copyright">
-						&copy; Untitled. Design: <a href="https://templated.co">TEMPLATED</a>. Images: <a href="https://unsplash.com">Unsplash</a>.
+						<div class="timer-piece">
+							<div class="timer-value" id="timer-seconds">0</div>
+							<div>seconds</div>
+						</div>
 					</div>
-
 				</div>
-			</footer>
+				<div class="timeline">
+					<div class="timeline-header">
+						<h3>Living timeline</h3>
+						<button class="btn btn-ghost" type="button" id="timeline-add">Add memory (coming soon)</button>
+					</div>
+					<div class="timeline-track">
+						<div class="timeline-dots">
+							<div class="timeline-dot"></div>
+							<div class="timeline-dot"></div>
+							<div class="timeline-dot"></div>
+							<div class="timeline-dot"></div>
+						</div>
+						<p class="timeline-placeholder">Soon you'll be able to drop photos &amp; titles on each heart. Start collecting your favorite memories! 💗</p>
+					</div>
+				</div>
+			</section>
+		</main>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/skel.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+		<script>
+			const steps = ['intro-step', 'traits-step', 'main-step'];
+			const showStep = (id) => {
+				steps.forEach((stepId) => {
+					const el = document.getElementById(stepId);
+					if (!el) return;
+					el.classList.toggle('active', stepId === id);
+				});
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			};
 
+			const secretName = 'sandy kang';
+			const hints = [
+				"Look at the website name!",
+				"Queen of morning coffees and matcha lattes.",
+				"Think of the person whose laugh amplifies every room.",
+				"Rhymes with 'candy', because she is sweeter.",
+				"Starts with the letter just after R.",
+				"Engraved on in a certain someone's heart;)",
+				"hmm maybe you just aren't the right person",
+				"don't think too hard",
+				"#8^!nz7%)}~#!4+o?"
+			];
+			let remainingHints = [...hints];
+
+			const nameForm = document.getElementById('name-form');
+			const secretInput = document.getElementById('secret-input');
+			const hintBox = document.getElementById('hint-box');
+
+			const revealHint = () => {
+				if (!remainingHints.length) {
+					hintBox.textContent = 'No more hints. You already know this!';
+					hintBox.classList.add('visible', 'shake');
+					setTimeout(() => hintBox.classList.remove('shake'), 500);
+					return;
+				}
+				const randomIndex = Math.floor(Math.random() * remainingHints.length);
+				const hint = remainingHints.splice(randomIndex, 1)[0];
+				hintBox.textContent = hint;
+				hintBox.classList.add('visible', 'shake');
+				setTimeout(() => hintBox.classList.remove('shake'), 500);
+			};
+
+			nameForm.addEventListener('submit', (event) => {
+				event.preventDefault();
+				const guess = secretInput.value.trim().toLowerCase();
+				if (!guess) {
+					return;
+				}
+				if (guess === secretName) {
+					hintBox.textContent = 'Welcome home, Sandy Kang! 💖';
+					hintBox.classList.add('visible');
+					secretInput.value = '';
+					setTimeout(() => showStep('traits-step'), 900);
+				} else {
+					revealHint();
+				}
+			});
+
+			setTimeout(() => secretInput.focus(), 600);
+
+			const traits = [
+				{ label: 'Brightest smile', type: 'good' },
+				{ label: 'Caring listener', type: 'good' },
+				{ label: 'Adventure buddy', type: 'good' },
+				{ label: 'Matcha connoisseur', type: 'good' },
+				{ label: 'Smarty pants', type: 'good' },
+				{ label: 'Hour glass;)', type: 'good' },
+				{ label: 'Homework procrastinator', type: 'bad' },
+				{ label: 'Ajumma', type: 'good' },
+				{ label: 'Annoyed shopper', type: 'bad' },
+				{ label: 'Warmest hugs', type: 'good' },
+				{ label: 'Plant whisperer', type: 'good' },
+				{ label: 'Vocal legend', type: 'good' },
+				{ label: 'Terrible at texting back', type: 'bad' },
+				{ label: 'Sleeping Buddy', type: 'good' },
+				{ label: 'Background movie gremlin', type: 'bad' },
+				{ label: 'Determined squirrelly', type: 'good' },
+				{ label: 'Genuinely genuine', type: 'good' },
+				{ label: 'Shockingly good dancer', type: 'good' }
+			];
+
+			const traitsBox = document.getElementById('traits-box');
+			const traitCounter = document.getElementById('trait-counter');
+			const traitSuccess = document.getElementById('trait-success');
+			const goal = 10;
+			let goodSelections = 0;
+
+			traits.forEach((trait) => {
+				const btn = document.createElement('button');
+				btn.type = 'button';
+				btn.textContent = trait.label;
+				btn.className = 'trait-btn';
+				btn.dataset.traitType = trait.type;
+				btn.addEventListener('click', () => {
+					if (trait.type === 'good') {
+						if (btn.classList.contains('locked')) return;
+						btn.classList.add('good-selected', 'locked');
+						goodSelections += 1;
+						traitCounter.textContent = `${goodSelections} / ${goal} selected`;
+						if (goodSelections >= goal) {
+							traitSuccess.textContent = 'That was too ez. Welcome!';
+							setTimeout(() => showStep('main-step'), 1300);
+						}
+					} else {
+						btn.classList.add('bad-alert');
+						setTimeout(() => btn.classList.remove('bad-alert'), 600);
+					}
+				});
+				traitsBox.appendChild(btn);
+			});
+
+			const relationshipStart = new Date('2024-11-27T16:23:00-08:00');
+			const timerEls = {
+				days: document.getElementById('timer-days'),
+				hours: document.getElementById('timer-hours'),
+				minutes: document.getElementById('timer-minutes'),
+				seconds: document.getElementById('timer-seconds')
+			};
+
+			const updateTimer = () => {
+				const now = new Date();
+				let diff = now - relationshipStart;
+				if (diff < 0) diff = 0;
+				const seconds = Math.floor(diff / 1000);
+				const days = Math.floor(seconds / 86400);
+				const hours = Math.floor((seconds % 86400) / 3600);
+				const minutes = Math.floor((seconds % 3600) / 60);
+				const remainingSeconds = seconds % 60;
+				timerEls.days.textContent = days;
+				timerEls.hours.textContent = String(hours).padStart(2, '0');
+				timerEls.minutes.textContent = String(minutes).padStart(2, '0');
+				timerEls.seconds.textContent = String(remainingSeconds).padStart(2, '0');
+			};
+
+			updateTimer();
+			setInterval(updateTimer, 1000);
+
+			document.getElementById('timeline-add').addEventListener('click', () => {
+				alert('Timeline builder coming soon! Gather photos & stories to drop onto each heart.');
+			});
+		</script>
 	</body>
 </html>
