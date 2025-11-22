@@ -316,55 +316,370 @@
 			.timeline {
 				display: flex;
 				flex-direction: column;
+				gap: 1.25rem;
+			}
+
+			.timeline-header h3 {
+				margin-bottom: 0.25rem;
+			}
+
+			.timeline-note {
+				font-size: 0.9rem;
+				color: rgba(31, 26, 28, 0.7);
+			}
+
+			.timeline-controls {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
 				gap: 1rem;
+				justify-content: space-between;
+			}
+
+			.year-selector {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+			}
+
+			.year-pill {
+				border: 2px solid rgba(244, 92, 135, 0.35);
+				border-radius: 999px;
+				padding: 0.35rem 0.9rem;
+				background: #fff;
+				font-weight: 600;
+				color: var(--charcoal);
+				cursor: pointer;
+				transition: all 0.2s ease;
+			}
+
+			.year-pill.active {
+				background: var(--pink-600);
+				color: #fff;
+				box-shadow: 0 0.5rem 1.5rem rgba(244, 92, 135, 0.35);
+				border-color: transparent;
+			}
+
+			#timeline-range-label {
+				font-size: 0.95rem;
+				color: rgba(31, 26, 28, 0.9);
 			}
 
 			.timeline-track {
 				position: relative;
 				background: #fff;
 				border-radius: 32px;
-				padding: 2rem;
-				min-height: 220px;
+				padding: 2rem 3rem;
+				min-height: 480px;
 				box-shadow: 0 20px 40px rgba(31, 26, 28, 0.08);
+				overflow: hidden;
 			}
 
-			.timeline-track::before {
-				content: '';
+			.timeline-axis {
 				position: absolute;
 				left: 50%;
 				top: 2rem;
 				bottom: 2rem;
 				width: 4px;
-				background: rgba(244, 92, 135, 0.2);
+				background: rgba(244, 92, 135, 0.25);
 				transform: translateX(-50%);
 			}
 
-			.timeline-placeholder {
+			.timeline-intervals,
+			.timeline-events {
+				position: absolute;
+				top: 2rem;
+				bottom: 2rem;
+				left: 0;
+				right: 0;
+				pointer-events: none;
+			}
+
+			.interval-marker {
+				position: absolute;
+				left: 50%;
+				transform: translate(-50%, -50%);
 				text-align: center;
-				font-weight: 500;
-				color: rgba(31, 26, 28, 0.7);
-				margin-top: 1rem;
 			}
 
-			.timeline-dots {
-				display: flex;
-				justify-content: space-between;
-				position: relative;
-				z-index: 1;
+			.interval-marker::before {
+				content: '';
+				display: block;
+				width: 14px;
+				height: 14px;
+				border-radius: 999px;
+				margin: 0 auto 0.2rem;
+				background: rgba(244, 92, 135, 0.2);
 			}
 
-			.timeline-dot {
-				width: 22px;
-				height: 22px;
-				border-radius: 50%;
+			.interval-marker.month-start::before {
 				background: var(--pink-600);
-				box-shadow: 0 0 0 8px rgba(244, 92, 135, 0.12);
+			}
+
+			.interval-label {
+				font-size: 0.8rem;
+				font-weight: 600;
+				color: rgba(31, 26, 28, 0.8);
+			}
+
+			.timeline-event {
+				position: absolute;
+				left: calc(50% + 30px);
+				transform: translateY(-50%);
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				pointer-events: auto;
 				cursor: pointer;
 				transition: transform 0.2s ease;
 			}
 
-			.timeline-dot:active {
-				transform: scale(0.85);
+			.timeline-event:hover {
+				transform: translateY(-50%) scale(1.05);
+			}
+
+			.timeline-event-dot {
+				width: 16px;
+				height: 16px;
+				border-radius: 999px;
+				background: var(--pink-600);
+				box-shadow: 0 0 0 6px rgba(244, 92, 135, 0.15);
+				transition: all 0.2s ease;
+			}
+
+			.timeline-event:hover .timeline-event-dot {
+				box-shadow: 0 0 0 10px rgba(244, 92, 135, 0.25);
+			}
+
+			.timeline-event-title {
+				font-weight: 600;
+				background: var(--pink-050);
+				padding: 0.4rem 0.75rem;
+				border-radius: 999px;
+				box-shadow: 0 10px 20px rgba(244, 92, 135, 0.12);
+			}
+
+			.event-form {
+				display: grid;
+				gap: 1rem;
+				background: rgba(255, 255, 255, 0.85);
+				padding: 1.5rem;
+				border-radius: 28px;
+				box-shadow: inset 0 0 0 2px rgba(244, 92, 135, 0.08);
+			}
+
+			.event-form-row {
+				display: flex;
+				flex-direction: column;
+				gap: 0.3rem;
+			}
+
+			.event-form label {
+				font-weight: 600;
+			}
+
+			.event-form input,
+			.event-form textarea {
+				border-radius: 18px;
+				border: 2px solid rgba(244, 92, 135, 0.35);
+				padding: 0.85rem 1rem;
+				font-family: inherit;
+				font-size: 1rem;
+				background: #fff;
+			}
+
+			.event-form textarea {
+				min-height: 90px;
+				resize: vertical;
+			}
+
+			.event-form input[type='file'] {
+				padding: 0.6rem 1rem;
+			}
+
+			.timeline-form-note {
+				font-size: 0.85rem;
+				color: rgba(31, 26, 28, 0.7);
+			}
+
+			.timeline-message {
+				min-height: 24px;
+				font-size: 0.95rem;
+				font-weight: 600;
+				color: var(--pink-600);
+			}
+
+			.event-list {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+				gap: 1rem;
+			}
+
+			.event-card {
+				background: #fff;
+				border-radius: 24px;
+				padding: 1rem;
+				box-shadow: 0 20px 30px rgba(31, 26, 28, 0.08);
+				display: flex;
+				flex-direction: column;
+				gap: 0.75rem;
+			}
+
+			.event-card img {
+				width: 100%;
+				border-radius: 18px;
+				object-fit: cover;
+				max-height: 160px;
+			}
+
+			.event-meta {
+				font-size: 0.9rem;
+				color: rgba(31, 26, 28, 0.7);
+			}
+
+			.event-delete {
+				align-self: flex-start;
+				border: none;
+				background: rgba(244, 92, 135, 0.12);
+				color: var(--pink-600);
+				padding: 0.5rem 0.9rem;
+				border-radius: 999px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: background 0.2s ease;
+			}
+
+			.event-delete:hover {
+				background: rgba(244, 92, 135, 0.25);
+			}
+
+			.timeline-empty {
+				background: rgba(255, 255, 255, 0.9);
+				padding: 1rem;
+				border-radius: 18px;
+				text-align: center;
+				color: rgba(31, 26, 28, 0.7);
+			}
+
+			.event-detail-modal {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(31, 26, 28, 0.75);
+				display: none;
+				align-items: center;
+				justify-content: center;
+				z-index: 1000;
+				padding: 2rem;
+				opacity: 0;
+				transition: opacity 0.3s ease;
+			}
+
+			.event-detail-modal.active {
+				display: flex;
+				opacity: 1;
+			}
+
+			.event-detail-content {
+				background: #fff;
+				border-radius: 32px;
+				padding: 2rem;
+				max-width: 560px;
+				width: 100%;
+				max-height: 80vh;
+				overflow-y: auto;
+				box-shadow: 0 30px 60px rgba(31, 26, 28, 0.2);
+				position: relative;
+				transform: scale(0.9);
+				transition: transform 0.3s ease;
+			}
+
+			.event-detail-modal.active .event-detail-content {
+				transform: scale(1);
+			}
+
+			.event-detail-close {
+				position: absolute;
+				top: 1.5rem;
+				right: 1.5rem;
+				background: rgba(244, 92, 135, 0.12);
+				border: none;
+				width: 36px;
+				height: 36px;
+				border-radius: 999px;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 1.5rem;
+				color: var(--pink-600);
+				transition: background 0.2s ease, transform 0.2s ease;
+			}
+
+			.event-detail-close:hover {
+				background: rgba(244, 92, 135, 0.25);
+				transform: scale(1.1);
+			}
+
+			.event-detail-header {
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+				margin-bottom: 1.5rem;
+			}
+
+			.event-detail-header h3 {
+				margin: 0;
+				color: var(--charcoal);
+				font-size: 1.75rem;
+			}
+
+			.event-detail-date {
+				font-size: 0.95rem;
+				color: rgba(31, 26, 28, 0.7);
+				font-weight: 600;
+			}
+
+			.event-detail-body {
+				display: flex;
+				flex-direction: column;
+				gap: 1.25rem;
+			}
+
+			.event-detail-photo {
+				width: 100%;
+				border-radius: 24px;
+				object-fit: cover;
+				max-height: 320px;
+			}
+
+			.event-detail-description {
+				line-height: 1.6;
+				color: var(--charcoal);
+			}
+
+			.event-detail-actions {
+				display: flex;
+				gap: 0.75rem;
+				margin-top: 1rem;
+			}
+
+			.event-detail-delete {
+				border: none;
+				background: rgba(244, 92, 135, 0.12);
+				color: var(--pink-600);
+				padding: 0.75rem 1.25rem;
+				border-radius: 999px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: background 0.2s ease;
+				font-size: 1rem;
+			}
+
+			.event-detail-delete:hover {
+				background: rgba(244, 92, 135, 0.25);
 			}
 
 			@media (max-width: 640px) {
@@ -438,31 +753,65 @@
 				<div class="timeline">
 					<div class="timeline-header">
 						<h3>Living timeline</h3>
-						<button class="btn btn-ghost" type="button" id="timeline-add">Add memory (coming soon)</button>
+						<p class="timeline-note">Vertical memories from day one. Pick a year, drop up to 4 highlights per month, and they'll stay saved in this browser.</p>
+					</div>
+					<div class="timeline-controls">
+						<div class="year-selector" id="year-selector"></div>
+						<span id="timeline-range-label"></span>
 					</div>
 					<div class="timeline-track">
-						<div class="timeline-dots">
-							<div class="timeline-dot"></div>
-							<div class="timeline-dot"></div>
-							<div class="timeline-dot"></div>
-							<div class="timeline-dot"></div>
-						</div>
-						<p class="timeline-placeholder">Soon you'll be able to drop photos &amp; titles on each heart. Start collecting your favorite memories! 💗</p>
+						<div class="timeline-axis"></div>
+						<div class="timeline-intervals" id="timeline-intervals"></div>
+						<div class="timeline-events" id="timeline-events"></div>
 					</div>
+					<p class="timeline-message" id="timeline-message"></p>
+					<form class="event-form" id="event-form">
+						<div class="event-form-row">
+							<label for="event-date">Date *</label>
+							<input type="date" id="event-date" name="event-date" required min="2024-11-27" max="" />
+						</div>
+						<div class="event-form-row">
+							<label for="event-title">Title *</label>
+							<input type="text" id="event-title" name="event-title" placeholder="ex. Firefly picnic" required />
+						</div>
+						<div class="event-form-row">
+							<label for="event-description">Description</label>
+							<textarea id="event-description" name="event-description" placeholder="What made it unforgettable?"></textarea>
+						</div>
+						<div class="event-form-row">
+							<label for="event-photo">Photo (optional)</label>
+							<input type="file" id="event-photo" name="event-photo" accept="image/*" />
+							<p class="timeline-form-note">Photos are stored locally so they never leave this device.</p>
+						</div>
+						<button class="btn btn-primary" type="submit">Save memory</button>
+					</form>
+					<div class="event-list" id="event-list"></div>
 				</div>
 			</section>
 		</main>
 
+		<div id="event-detail-modal" class="event-detail-modal">
+			<div class="event-detail-content">
+				<button class="event-detail-close" type="button" id="event-detail-close" aria-label="Close">×</button>
+				<div class="event-detail-header">
+					<h3 id="event-detail-title"></h3>
+					<p class="event-detail-date" id="event-detail-date"></p>
+				</div>
+				<div class="event-detail-body" id="event-detail-body"></div>
+			</div>
+		</div>
+
 		<script>
 			const steps = ['intro-step', 'traits-step', 'main-step'];
-			const showStep = (id) => {
+
+			function showStep(id) {
 				steps.forEach((stepId) => {
 					const el = document.getElementById(stepId);
 					if (!el) return;
 					el.classList.toggle('active', stepId === id);
 				});
 				window.scrollTo({ top: 0, behavior: 'smooth' });
-			};
+			}
 
 			const secretName = 'sandy kang';
 			const hints = [
@@ -591,9 +940,417 @@
 			updateTimer();
 			setInterval(updateTimer, 1000);
 
-			document.getElementById('timeline-add').addEventListener('click', () => {
-				alert('Timeline builder coming soon! Gather photos & stories to drop onto each heart.');
-			});
+			const timelineEls = {
+				yearSelector: document.getElementById('year-selector'),
+				rangeLabel: document.getElementById('timeline-range-label'),
+				intervals: document.getElementById('timeline-intervals'),
+				events: document.getElementById('timeline-events'),
+				message: document.getElementById('timeline-message'),
+				form: document.getElementById('event-form'),
+				eventList: document.getElementById('event-list'),
+				eventDate: document.getElementById('event-date'),
+				eventTitle: document.getElementById('event-title'),
+				eventDescription: document.getElementById('event-description'),
+				eventPhoto: document.getElementById('event-photo')
+			};
+
+			const timelineStartDate = (() => {
+				const base = new Date(relationshipStart);
+				base.setHours(0, 0, 0, 0);
+				return base;
+			})();
+			const today = (() => {
+				const now = new Date();
+				now.setHours(0, 0, 0, 0);
+				return now;
+			})();
+			const timelineStorageKey = 'skyTimelineEvents.v1';
+			const startYear = timelineStartDate.getFullYear();
+			const todayYear = today.getFullYear();
+			let timelineEvents = [];
+			let currentTimelineYear = todayYear;
+
+			const setTimelineMessage = (text = '') => {
+				if (timelineEls.message) {
+					timelineEls.message.textContent = text;
+				}
+			};
+
+			const normalizeDate = (date) => {
+				const normalized = new Date(date);
+				normalized.setHours(0, 0, 0, 0);
+				return normalized;
+			};
+
+			const formatDisplayDate = (date, options = { month: 'short', day: 'numeric', year: 'numeric' }) =>
+				date.toLocaleString(undefined, options);
+
+			const formatRangeLabel = (start, end) => `${formatDisplayDate(start)} → ${formatDisplayDate(end)}`;
+
+			const formatInputDate = (date) => date.toISOString().split('T')[0];
+
+			const loadTimelineEvents = () => {
+				try {
+					const raw = JSON.parse(localStorage.getItem(timelineStorageKey)) || [];
+					return raw.filter((evt) => evt && evt.date && evt.title);
+				} catch (error) {
+					console.warn('Unable to load timeline events', error);
+					setTimelineMessage('Timeline data could not be loaded. Local storage may be disabled.');
+					return [];
+				}
+			};
+
+			const saveTimelineEvents = () => {
+				try {
+					localStorage.setItem(timelineStorageKey, JSON.stringify(timelineEvents));
+				} catch (error) {
+					console.warn('Unable to save timeline events', error);
+					setTimelineMessage('Memories could not be saved. Check browser storage settings.');
+				}
+			};
+
+			const getYearBounds = (year) => {
+				const start = year === startYear ? new Date(timelineStartDate) : new Date(year, 0, 1);
+				const endCandidate = year === todayYear ? today : new Date(year, 11, 31);
+				return {
+					start,
+					end: endCandidate
+				};
+			};
+
+			const getYearList = () => {
+				let latestYear = todayYear;
+				timelineEvents.forEach((evt) => {
+					const year = new Date(evt.date).getFullYear();
+					if (!Number.isNaN(year)) {
+						latestYear = Math.max(latestYear, year);
+					}
+				});
+				const years = [];
+				for (let year = startYear; year <= latestYear; year += 1) {
+					years.push(year);
+				}
+				return years;
+			};
+
+			const dateToPercent = (date, start, end) => {
+				const total = end - start;
+				if (total <= 0) {
+					return 0;
+				}
+				const diff = date - start;
+				return Math.min(100, Math.max(0, (diff / total) * 100));
+			};
+
+			const generateMarkers = (year) => {
+				const markers = [];
+				const { start, end } = getYearBounds(year);
+				markers.push({
+					date: new Date(start),
+					isMonthStart: start.getDate() === 1,
+					label: start.getDate() === 1 ? formatDisplayDate(start, { month: 'short' }) : formatDisplayDate(start, { month: 'short', day: 'numeric' })
+				});
+
+				let monthCursor = new Date(start.getFullYear(), start.getMonth(), 1);
+				if (monthCursor < start) {
+					monthCursor = new Date(start.getFullYear(), start.getMonth() + 1, 1);
+				}
+
+				while (monthCursor <= end) {
+					markers.push({
+						date: new Date(monthCursor),
+						isMonthStart: true,
+						label: formatDisplayDate(monthCursor, { month: 'short' })
+					});
+					const mid = new Date(monthCursor.getFullYear(), monthCursor.getMonth(), 16);
+					if (mid >= start && mid <= end) {
+						markers.push({ date: mid, isMonthStart: false });
+					}
+					monthCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1);
+				}
+
+				if (markers[markers.length - 1].date.getTime() !== end.getTime()) {
+					markers.push({
+						date: new Date(end),
+						isMonthStart: end.getDate() === 1,
+						label: end.getDate() === 1 ? formatDisplayDate(end, { month: 'short' }) : formatDisplayDate(end, { month: 'short', day: 'numeric' })
+					});
+				}
+
+				return markers.sort((a, b) => a.date - b.date);
+			};
+
+			const renderYearSelector = () => {
+				if (!timelineEls.yearSelector) return;
+				const years = getYearList();
+				if (!years.includes(currentTimelineYear)) {
+					currentTimelineYear = years[years.length - 1];
+				}
+				timelineEls.yearSelector.innerHTML = '';
+				years.forEach((year) => {
+					const pill = document.createElement('button');
+					pill.type = 'button';
+					pill.className = `year-pill${year === currentTimelineYear ? ' active' : ''}`;
+					pill.textContent = year;
+					pill.addEventListener('click', () => {
+						currentTimelineYear = year;
+						renderTimeline();
+					});
+					timelineEls.yearSelector.appendChild(pill);
+				});
+			};
+
+			const renderEventList = (yearEvents) => {
+				if (!timelineEls.eventList) return;
+				timelineEls.eventList.innerHTML = '';
+				if (!yearEvents.length) {
+					const emptyState = document.createElement('div');
+					emptyState.className = 'timeline-empty';
+					emptyState.textContent = 'No memories saved for this year yet. Add one above!';
+					timelineEls.eventList.appendChild(emptyState);
+					return;
+				}
+
+				yearEvents.forEach((evt) => {
+					const card = document.createElement('article');
+					card.className = 'event-card';
+					const title = document.createElement('h4');
+					title.textContent = evt.title;
+					const meta = document.createElement('p');
+					meta.className = 'event-meta';
+					meta.textContent = formatDisplayDate(new Date(evt.date));
+					card.append(title, meta);
+					if (evt.photo) {
+						const img = document.createElement('img');
+						img.src = evt.photo;
+						img.alt = `${evt.title} photo`;
+						card.appendChild(img);
+					}
+					if (evt.description) {
+						const desc = document.createElement('p');
+						desc.textContent = evt.description;
+						card.appendChild(desc);
+					}
+					const deleteBtn = document.createElement('button');
+					deleteBtn.type = 'button';
+					deleteBtn.className = 'event-delete';
+					deleteBtn.textContent = 'Delete';
+					deleteBtn.addEventListener('click', () => {
+						timelineEvents = timelineEvents.filter((item) => item.id !== evt.id);
+						saveTimelineEvents();
+						setTimelineMessage('Memory deleted.');
+						renderTimeline();
+					});
+					card.appendChild(deleteBtn);
+					timelineEls.eventList.appendChild(card);
+				});
+			};
+
+			const renderTimeline = () => {
+				if (!timelineEls.intervals || !timelineEls.events) return;
+				renderYearSelector();
+				const { start, end } = getYearBounds(currentTimelineYear);
+				if (timelineEls.rangeLabel) {
+					timelineEls.rangeLabel.textContent = formatRangeLabel(start, end);
+				}
+				timelineEls.intervals.innerHTML = '';
+				timelineEls.events.innerHTML = '';
+				const markers = generateMarkers(currentTimelineYear);
+				markers.forEach((marker) => {
+					const markerEl = document.createElement('div');
+					markerEl.className = `interval-marker${marker.isMonthStart ? ' month-start' : ''}`;
+					markerEl.style.top = `${dateToPercent(marker.date, start, end)}%`;
+					if (marker.isMonthStart && marker.label) {
+						const label = document.createElement('div');
+						label.className = 'interval-label';
+						label.textContent = marker.label;
+						markerEl.appendChild(label);
+					}
+					timelineEls.intervals.appendChild(markerEl);
+				});
+
+				const yearEvents = timelineEvents
+					.filter((evt) => new Date(evt.date).getFullYear() === currentTimelineYear)
+					.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+				yearEvents.forEach((evt) => {
+					const date = new Date(evt.date);
+					if (date < start || date > end) {
+						return;
+					}
+					const eventEl = document.createElement('div');
+					eventEl.className = 'timeline-event';
+					eventEl.style.top = `${dateToPercent(date, start, end)}%`;
+					eventEl.title = evt.description ? `${evt.title}: ${evt.description}` : evt.title;
+					eventEl.addEventListener('click', () => showEventModal(evt));
+					const dot = document.createElement('span');
+					dot.className = 'timeline-event-dot';
+					const title = document.createElement('span');
+					title.className = 'timeline-event-title';
+					title.textContent = evt.title;
+					eventEl.append(dot, title);
+					timelineEls.events.appendChild(eventEl);
+				});
+
+				renderEventList(yearEvents);
+			};
+
+			const readFileAsDataUrl = (file) =>
+				new Promise((resolve, reject) => {
+					const reader = new FileReader();
+					reader.onload = () => resolve(reader.result);
+					reader.onerror = () => reject(new Error('File reading failed'));
+					reader.readAsDataURL(file);
+				});
+
+			const getMonthCount = (dateObj) => {
+				const targetYear = dateObj.getFullYear();
+				const targetMonth = dateObj.getMonth();
+				return timelineEvents.filter((evt) => {
+					const evtDate = new Date(evt.date);
+					return evtDate.getFullYear() === targetYear && evtDate.getMonth() === targetMonth;
+				}).length;
+			};
+
+			const handleEventSubmit = async (event) => {
+				event.preventDefault();
+				if (!timelineEls.eventDate || !timelineEls.eventTitle) return;
+				const dateValue = timelineEls.eventDate.value;
+				const titleValue = timelineEls.eventTitle.value.trim();
+				const descriptionValue = (timelineEls.eventDescription?.value || '').trim();
+				if (!dateValue || !titleValue) {
+					setTimelineMessage('Date and title are required.');
+					return;
+				}
+				const entryDate = normalizeDate(dateValue);
+				if (entryDate < timelineStartDate) {
+					setTimelineMessage('Memories begin on Nov 27, 2024.');
+					return;
+				}
+				if (entryDate > today) {
+					setTimelineMessage('We can only log moments that already happened.');
+					return;
+				}
+				if (getMonthCount(entryDate) >= 4) {
+					setTimelineMessage('Only 4 memories per month are allowed.');
+					return;
+				}
+
+				const newEvent = {
+					id:
+						typeof crypto !== 'undefined' && crypto.randomUUID
+							? crypto.randomUUID()
+							: `evt-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+					date: dateValue,
+					title: titleValue,
+					description: descriptionValue,
+					photo: null
+				};
+
+				const finalizeSave = (photoData) => {
+					newEvent.photo = photoData || null;
+					timelineEvents.push(newEvent);
+					saveTimelineEvents();
+					currentTimelineYear = new Date(newEvent.date).getFullYear();
+					renderTimeline();
+					setTimelineMessage('Memory saved!');
+					timelineEls.form.reset();
+					timelineEls.eventDate.value = dateValue;
+				};
+
+				const photoFile = timelineEls.eventPhoto?.files?.[0];
+				if (photoFile) {
+					try {
+						const dataUrl = await readFileAsDataUrl(photoFile);
+						finalizeSave(dataUrl);
+					} catch (error) {
+						console.warn('Photo upload failed', error);
+						setTimelineMessage('Photo could not be read. Try a smaller image.');
+					}
+				} else {
+					finalizeSave(null);
+				}
+			};
+
+			const modalEls = {
+				modal: document.getElementById('event-detail-modal'),
+				title: document.getElementById('event-detail-title'),
+				date: document.getElementById('event-detail-date'),
+				body: document.getElementById('event-detail-body'),
+				close: document.getElementById('event-detail-close')
+			};
+
+			const showEventModal = (evt) => {
+				if (!modalEls.modal || !modalEls.title || !modalEls.date || !modalEls.body) return;
+				modalEls.title.textContent = evt.title;
+				modalEls.date.textContent = formatDisplayDate(new Date(evt.date));
+				modalEls.body.innerHTML = '';
+				if (evt.photo) {
+					const img = document.createElement('img');
+					img.src = evt.photo;
+					img.alt = `${evt.title} photo`;
+					img.className = 'event-detail-photo';
+					modalEls.body.appendChild(img);
+				}
+				if (evt.description) {
+					const desc = document.createElement('p');
+					desc.className = 'event-detail-description';
+					desc.textContent = evt.description;
+					modalEls.body.appendChild(desc);
+				}
+				const actions = document.createElement('div');
+				actions.className = 'event-detail-actions';
+				const deleteBtn = document.createElement('button');
+				deleteBtn.type = 'button';
+				deleteBtn.className = 'event-detail-delete';
+				deleteBtn.textContent = 'Delete memory';
+				deleteBtn.addEventListener('click', () => {
+					timelineEvents = timelineEvents.filter((item) => item.id !== evt.id);
+					saveTimelineEvents();
+					hideEventModal();
+					setTimelineMessage('Memory deleted.');
+					renderTimeline();
+				});
+				actions.appendChild(deleteBtn);
+				modalEls.body.appendChild(actions);
+				modalEls.modal.classList.add('active');
+				document.body.style.overflow = 'hidden';
+			};
+
+			const hideEventModal = () => {
+				if (modalEls.modal) {
+					modalEls.modal.classList.remove('active');
+					document.body.style.overflow = '';
+				}
+			};
+
+			if (modalEls.close) {
+				modalEls.close.addEventListener('click', hideEventModal);
+			}
+
+			if (modalEls.modal) {
+				modalEls.modal.addEventListener('click', (e) => {
+					if (e.target === modalEls.modal) {
+						hideEventModal();
+					}
+				});
+			}
+
+			const initTimeline = () => {
+				if (!timelineEls.form) return;
+				timelineEvents = loadTimelineEvents();
+				currentTimelineYear = Math.max(startYear, Math.min(todayYear, currentTimelineYear));
+				if (timelineEls.eventDate) {
+					timelineEls.eventDate.max = formatInputDate(today);
+					if (!timelineEls.eventDate.value) {
+						timelineEls.eventDate.value = formatInputDate(today);
+					}
+				}
+				renderTimeline();
+				timelineEls.form.addEventListener('submit', handleEventSubmit);
+			};
+
+			initTimeline();
 		</script>
 	</body>
 </html>
