@@ -472,6 +472,22 @@
 				padding: 1.5rem;
 				border-radius: 28px;
 				box-shadow: inset 0 0 0 2px rgba(244, 92, 135, 0.08);
+				transition: box-shadow 0.3s ease, background 0.3s ease;
+			}
+
+			.event-form.flash-edit {
+				animation: flashBorder 0.6s ease;
+			}
+
+			@keyframes flashBorder {
+				0%, 100% {
+					box-shadow: inset 0 0 0 2px rgba(244, 92, 135, 0.08);
+					background: rgba(255, 255, 255, 0.85);
+				}
+				50% {
+					box-shadow: inset 0 0 0 3px rgba(59, 130, 246, 0.4);
+					background: rgba(59, 130, 246, 0.05);
+				}
 			}
 
 			.event-form-row {
@@ -515,6 +531,30 @@
 				color: var(--pink-600);
 			}
 
+			.form-button-group {
+				display: flex;
+				gap: 0.75rem;
+				flex-wrap: wrap;
+			}
+
+			.btn-cancel {
+				background: rgba(107, 114, 128, 0.12);
+				color: #4b5563;
+				border: none;
+				padding: 0.85rem 1.75rem;
+				border-radius: 999px;
+				font-weight: 700;
+				font-size: 1rem;
+				cursor: pointer;
+				transition: all 0.2s ease;
+				font-family: inherit;
+			}
+
+			.btn-cancel:hover {
+				background: rgba(107, 114, 128, 0.25);
+				transform: translateY(-2px);
+			}
+
 			.event-list {
 				display: grid;
 				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -543,20 +583,39 @@
 				color: rgba(31, 26, 28, 0.7);
 			}
 
-			.event-delete {
-				align-self: flex-start;
+			.event-actions {
+				display: flex;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+			}
+
+			.event-delete,
+			.event-edit {
 				border: none;
-				background: rgba(244, 92, 135, 0.12);
-				color: var(--pink-600);
 				padding: 0.5rem 0.9rem;
 				border-radius: 999px;
 				font-weight: 600;
 				cursor: pointer;
 				transition: background 0.2s ease;
+				font-size: 0.9rem;
+			}
+
+			.event-delete {
+				background: rgba(244, 92, 135, 0.12);
+				color: var(--pink-600);
 			}
 
 			.event-delete:hover {
 				background: rgba(244, 92, 135, 0.25);
+			}
+
+			.event-edit {
+				background: rgba(59, 130, 246, 0.12);
+				color: #3b82f6;
+			}
+
+			.event-edit:hover {
+				background: rgba(59, 130, 246, 0.25);
 			}
 
 			.timeline-empty {
@@ -672,10 +731,9 @@
 				margin-top: 1rem;
 			}
 
-			.event-detail-delete {
+			.event-detail-delete,
+			.event-detail-edit {
 				border: none;
-				background: rgba(244, 92, 135, 0.12);
-				color: var(--pink-600);
 				padding: 0.75rem 1.25rem;
 				border-radius: 999px;
 				font-weight: 600;
@@ -684,8 +742,22 @@
 				font-size: 1rem;
 			}
 
+			.event-detail-delete {
+				background: rgba(244, 92, 135, 0.12);
+				color: var(--pink-600);
+			}
+
 			.event-detail-delete:hover {
 				background: rgba(244, 92, 135, 0.25);
+			}
+
+			.event-detail-edit {
+				background: rgba(59, 130, 246, 0.12);
+				color: #3b82f6;
+			}
+
+			.event-detail-edit:hover {
+				background: rgba(59, 130, 246, 0.25);
 			}
 
 			@media (max-width: 640px) {
@@ -789,7 +861,10 @@
 							<input type="file" id="event-photo" name="event-photo" accept="image/*" />
 							<p class="timeline-form-note">Photos are stored locally so they never leave this device.</p>
 						</div>
-						<button class="btn btn-primary" type="submit">Save memory</button>
+						<div class="form-button-group">
+							<button class="btn btn-primary" type="submit">Save memory</button>
+							<button class="btn-cancel" type="button" id="cancel-edit-btn" style="display: none;">Cancel</button>
+						</div>
 					</form>
 					<div class="event-list" id="event-list"></div>
 				</div>
@@ -1009,6 +1084,7 @@
 			const todayYear = today.getFullYear();
 			let timelineEvents = [];
 			let currentTimelineYear = todayYear;
+			let editingEventId = null; // Track which event is being edited
 
 			const setTimelineMessage = (text = '') => {
 				if (timelineEls.message) {
@@ -1233,18 +1309,33 @@
 						desc.textContent = evt.description;
 						card.appendChild(desc);
 					}
+					const actionsDiv = document.createElement('div');
+					actionsDiv.className = 'event-actions';
+					const editBtn = document.createElement('button');
+					editBtn.type = 'button';
+					editBtn.className = 'event-edit';
+					editBtn.textContent = 'Edit';
+					editBtn.addEventListener('click', () => {
+						if (confirm('Do you want to edit this memory?')) {
+							populateFormForEdit(evt);
+						}
+					});
 					const deleteBtn = document.createElement('button');
 					deleteBtn.type = 'button';
 					deleteBtn.className = 'event-delete';
 					deleteBtn.textContent = 'Delete';
 					deleteBtn.addEventListener('click', async () => {
-						await deleteEventFromFirestore(evt.id);
-						timelineEvents = timelineEvents.filter((item) => item.id !== evt.id);
-						await saveTimelineEvents();
-						setTimelineMessage('Memory deleted.');
-						renderTimeline();
+						if (confirm('Are you sure you want to delete this memory? This cannot be undone.')) {
+							await deleteEventFromFirestore(evt.id);
+							timelineEvents = timelineEvents.filter((item) => item.id !== evt.id);
+							await saveTimelineEvents();
+							setTimelineMessage('Memory deleted.');
+							renderTimeline();
+						}
 					});
-					card.appendChild(deleteBtn);
+					actionsDiv.appendChild(editBtn);
+					actionsDiv.appendChild(deleteBtn);
+					card.appendChild(actionsDiv);
 					timelineEls.eventList.appendChild(card);
 				});
 			};
@@ -1306,13 +1397,61 @@
 					reader.readAsDataURL(file);
 				});
 
-			const getMonthCount = (dateObj) => {
+			const getMonthCount = (dateObj, excludeId = null) => {
 				const targetYear = dateObj.getFullYear();
 				const targetMonth = dateObj.getMonth();
 				return timelineEvents.filter((evt) => {
+					if (excludeId && evt.id === excludeId) return false;
 					const evtDate = new Date(evt.date);
 					return evtDate.getFullYear() === targetYear && evtDate.getMonth() === targetMonth;
 				}).length;
+			};
+
+			const populateFormForEdit = (evt) => {
+				if (!timelineEls.eventDate || !timelineEls.eventTitle) return;
+				editingEventId = evt.id;
+				timelineEls.eventDate.value = evt.date;
+				timelineEls.eventTitle.value = evt.title;
+				if (timelineEls.eventDescription) {
+					timelineEls.eventDescription.value = evt.description || '';
+				}
+				const submitBtn = timelineEls.form.querySelector('button[type="submit"]');
+				if (submitBtn) {
+					submitBtn.textContent = 'Update memory';
+				}
+				const cancelBtn = document.getElementById('cancel-edit-btn');
+				if (cancelBtn) {
+					cancelBtn.style.display = 'block';
+				}
+				// Flash the form to indicate edit mode
+				if (timelineEls.form) {
+					timelineEls.form.classList.add('flash-edit');
+					setTimeout(() => {
+						timelineEls.form.classList.remove('flash-edit');
+					}, 600);
+				}
+				setTimelineMessage('Editing mode: Update the fields and save.');
+				timelineEls.eventTitle.focus();
+				timelineEls.eventTitle.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			};
+
+			const cancelEdit = () => {
+				editingEventId = null;
+				if (timelineEls.form) {
+					timelineEls.form.reset();
+					if (timelineEls.eventDate) {
+						timelineEls.eventDate.value = formatInputDate(today);
+					}
+				}
+				const submitBtn = timelineEls.form?.querySelector('button[type="submit"]');
+				if (submitBtn) {
+					submitBtn.textContent = 'Save memory';
+				}
+				const cancelBtn = document.getElementById('cancel-edit-btn');
+				if (cancelBtn) {
+					cancelBtn.style.display = 'none';
+				}
+				setTimelineMessage('');
 			};
 
 			const handleEventSubmit = async (event) => {
@@ -1334,44 +1473,89 @@
 					setTimelineMessage('We can only log moments that already happened.');
 					return;
 				}
-				if (getMonthCount(entryDate) >= 4) {
-					setTimelineMessage('Only 4 memories per month are allowed.');
-					return;
-				}
 
-				const newEvent = {
-					id:
-						typeof crypto !== 'undefined' && crypto.randomUUID
-							? crypto.randomUUID()
-							: `evt-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-					date: dateValue,
-					title: titleValue,
-					description: descriptionValue,
-					photo: null
-				};
+				// Check if editing
+				if (editingEventId) {
+					// Editing mode
+					if (getMonthCount(entryDate, editingEventId) >= 4) {
+						setTimelineMessage('Only 4 memories per month are allowed.');
+						return;
+					}
 
-				const finalizeSave = async (photoData) => {
-					newEvent.photo = photoData || null;
-					timelineEvents.push(newEvent);
-					await saveTimelineEvents();
-					currentTimelineYear = new Date(newEvent.date).getFullYear();
-					renderTimeline();
-					setTimelineMessage('Memory saved!');
-					timelineEls.form.reset();
-					timelineEls.eventDate.value = dateValue;
-				};
+					const existingEvent = timelineEvents.find((evt) => evt.id === editingEventId);
+					if (!existingEvent) {
+						setTimelineMessage('Event not found.');
+						cancelEdit();
+						return;
+					}
 
-				const photoFile = timelineEls.eventPhoto?.files?.[0];
-				if (photoFile) {
-					try {
-						const dataUrl = await readFileAsDataUrl(photoFile);
-						await finalizeSave(dataUrl);
-					} catch (error) {
-						console.warn('Photo upload failed', error);
-						setTimelineMessage('Photo could not be read. Try a smaller image.');
+					const finalizeUpdate = async (photoData) => {
+						existingEvent.date = dateValue;
+						existingEvent.title = titleValue;
+						existingEvent.description = descriptionValue;
+						if (photoData) {
+							existingEvent.photo = photoData;
+						}
+						await saveTimelineEvents();
+						currentTimelineYear = new Date(existingEvent.date).getFullYear();
+						renderTimeline();
+						setTimelineMessage('Memory updated!');
+						cancelEdit();
+					};
+
+					const photoFile = timelineEls.eventPhoto?.files?.[0];
+					if (photoFile) {
+						try {
+							const dataUrl = await readFileAsDataUrl(photoFile);
+							await finalizeUpdate(dataUrl);
+						} catch (error) {
+							console.warn('Photo upload failed', error);
+							setTimelineMessage('Photo could not be read. Try a smaller image.');
+						}
+					} else {
+						await finalizeUpdate(null);
 					}
 				} else {
-					await finalizeSave(null);
+					// Create mode
+					if (getMonthCount(entryDate) >= 4) {
+						setTimelineMessage('Only 4 memories per month are allowed.');
+						return;
+					}
+
+					const newEvent = {
+						id:
+							typeof crypto !== 'undefined' && crypto.randomUUID
+								? crypto.randomUUID()
+								: `evt-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+						date: dateValue,
+						title: titleValue,
+						description: descriptionValue,
+						photo: null
+					};
+
+					const finalizeSave = async (photoData) => {
+						newEvent.photo = photoData || null;
+						timelineEvents.push(newEvent);
+						await saveTimelineEvents();
+						currentTimelineYear = new Date(newEvent.date).getFullYear();
+						renderTimeline();
+						setTimelineMessage('Memory saved!');
+						timelineEls.form.reset();
+						timelineEls.eventDate.value = dateValue;
+					};
+
+					const photoFile = timelineEls.eventPhoto?.files?.[0];
+					if (photoFile) {
+						try {
+							const dataUrl = await readFileAsDataUrl(photoFile);
+							await finalizeSave(dataUrl);
+						} catch (error) {
+							console.warn('Photo upload failed', error);
+							setTimelineMessage('Photo could not be read. Try a smaller image.');
+						}
+					} else {
+						await finalizeSave(null);
+					}
 				}
 			};
 
@@ -1403,18 +1587,31 @@
 				}
 				const actions = document.createElement('div');
 				actions.className = 'event-detail-actions';
+				const editBtn = document.createElement('button');
+				editBtn.type = 'button';
+				editBtn.className = 'event-detail-edit';
+				editBtn.textContent = 'Edit memory';
+				editBtn.addEventListener('click', () => {
+					if (confirm('Do you want to edit this memory?')) {
+						hideEventModal();
+						populateFormForEdit(evt);
+					}
+				});
 				const deleteBtn = document.createElement('button');
 				deleteBtn.type = 'button';
 				deleteBtn.className = 'event-detail-delete';
 				deleteBtn.textContent = 'Delete memory';
 				deleteBtn.addEventListener('click', async () => {
-					await deleteEventFromFirestore(evt.id);
-					timelineEvents = timelineEvents.filter((item) => item.id !== evt.id);
-					await saveTimelineEvents();
-					hideEventModal();
-					setTimelineMessage('Memory deleted.');
-					renderTimeline();
+					if (confirm('Are you sure you want to delete this memory? This cannot be undone.')) {
+						await deleteEventFromFirestore(evt.id);
+						timelineEvents = timelineEvents.filter((item) => item.id !== evt.id);
+						await saveTimelineEvents();
+						hideEventModal();
+						setTimelineMessage('Memory deleted.');
+						renderTimeline();
+					}
 				});
+				actions.appendChild(editBtn);
 				actions.appendChild(deleteBtn);
 				modalEls.body.appendChild(actions);
 				modalEls.modal.classList.add('active');
@@ -1452,6 +1649,12 @@
 				}
 				renderTimeline();
 				timelineEls.form.addEventListener('submit', handleEventSubmit);
+				
+				// Wire up cancel button
+				const cancelBtn = document.getElementById('cancel-edit-btn');
+				if (cancelBtn) {
+					cancelBtn.addEventListener('click', cancelEdit);
+				}
 			};
 
 			initTimeline();
