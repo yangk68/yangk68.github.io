@@ -440,6 +440,12 @@
 				transition: transform 0.2s ease;
 			}
 
+			.timeline-event.left {
+				left: auto;
+				right: calc(50% + 30px);
+				flex-direction: row-reverse;
+			}
+
 			.timeline-event:hover {
 				transform: translateY(-50%) scale(1.05);
 			}
@@ -1375,14 +1381,24 @@
 					.filter((evt) => new Date(evt.date).getFullYear() === currentTimelineYear)
 					.sort((a, b) => new Date(a.date) - new Date(b.date));
 
+				const overlapThreshold = 8; // % distance to consider events too close
+				let lastPosition = -999;
+				let lastSide = 'right';
+
 				yearEvents.forEach((evt) => {
 					const date = new Date(evt.date);
 					if (date < start || date > end) {
 						return;
 					}
 					const eventEl = document.createElement('div');
-					eventEl.className = 'timeline-event';
-					eventEl.style.top = `${dateToPercent(date, start, end)}%`;
+					const position = dateToPercent(date, start, end);
+					
+					// Determine if this event is too close to the previous one
+					const isOverlapping = Math.abs(position - lastPosition) < overlapThreshold;
+					const side = isOverlapping ? (lastSide === 'right' ? 'left' : 'right') : 'right';
+					
+					eventEl.className = side === 'left' ? 'timeline-event left' : 'timeline-event';
+					eventEl.style.top = `${position}%`;
 					eventEl.title = evt.description ? `${evt.title}: ${evt.description}` : evt.title;
 					eventEl.addEventListener('click', () => showEventModal(evt));
 					const dot = document.createElement('span');
@@ -1392,6 +1408,9 @@
 					title.textContent = evt.title;
 					eventEl.append(dot, title);
 					timelineEls.events.appendChild(eventEl);
+					
+					lastPosition = position;
+					lastSide = side;
 				});
 
 				renderEventList(yearEvents);
