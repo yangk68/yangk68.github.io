@@ -847,6 +847,8 @@
 			}
 
 			const secretName = 'sandy kang';
+			const secretPassword1 = '0212'; // Secret password to skip directly to home
+			const secretPassword2 = 'ajumma';
 			const hints = [
 				"Look at the website name!",
 				"Queen of morning coffees and matcha lattes.",
@@ -884,8 +886,13 @@
 				if (!guess) {
 					return;
 				}
-				if (guess === secretName) {
-					hintBox.textContent = 'Welcome home, Sandy Kang! 💖';
+				if (guess === secretPassword1 || guess === secretPassword2) {
+					hintBox.textContent = 'Fast pass activated! ';
+					hintBox.classList.add('visible');
+					secretInput.value = '';
+					setTimeout(() => showStep('main-step'), 900);
+				} else if (guess === secretName) {
+					hintBox.textContent = 'Welcome home, Sandy Kang! ';
 					hintBox.classList.add('visible');
 					secretInput.value = '';
 					setTimeout(() => showStep('traits-step'), 900);
