@@ -774,7 +774,7 @@
 					<form class="event-form" id="event-form">
 						<div class="event-form-row">
 							<label for="event-date">Date *</label>
-							<input type="date" id="event-date" name="event-date" required min="2024-11-27" max="" />
+							<input type="date" id="event-date" name="event-date" required min="2024-10-01" max="" />
 						</div>
 						<div class="event-form-row">
 							<label for="event-title">Title *</label>
@@ -1327,7 +1327,7 @@
 				}
 				const entryDate = normalizeDate(dateValue);
 				if (entryDate < timelineStartDate) {
-					setTimelineMessage('Memories begin on Nov 27, 2024.');
+					setTimelineMessage('Memories begin on Oct 1, 2024.');
 					return;
 				}
 				if (entryDate > today) {
