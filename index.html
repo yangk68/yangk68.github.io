@@ -1424,6 +1424,24 @@
 					reader.readAsDataURL(file);
 				});
 
+			const uploadPhotoToStorage = async (file, eventId) => {
+				if (!firebaseInitialized || !storage) {
+					// Fallback to base64 for localStorage
+					return await readFileAsDataUrl(file);
+				}
+
+				try {
+					const storageRef = storage.ref(`timeline-photos/${eventId}/${file.name}`);
+					const snapshot = await storageRef.put(file);
+					const downloadURL = await snapshot.ref.getDownloadURL();
+					console.log('Photo uploaded to Firebase Storage:', downloadURL);
+					return downloadURL;
+				} catch (error) {
+					console.warn('Firebase Storage upload failed, using base64 fallback:', error);
+					return await readFileAsDataUrl(file);
+				}
+			};
+
 			const getMonthCount = (dateObj, excludeId = null) => {
 				const targetYear = dateObj.getFullYear();
 				const targetMonth = dateObj.getMonth();
@@ -1516,12 +1534,12 @@
 						return;
 					}
 
-					const finalizeUpdate = async (photoData) => {
+					const finalizeUpdate = async (photoUrl) => {
 						existingEvent.date = dateValue;
 						existingEvent.title = titleValue;
 						existingEvent.description = descriptionValue;
-						if (photoData) {
-							existingEvent.photo = photoData;
+						if (photoUrl) {
+							existingEvent.photo = photoUrl;
 						}
 						
 						// Save the updated event individually to Firestore if Firebase is initialized
@@ -1556,11 +1574,11 @@
 					const photoFile = timelineEls.eventPhoto?.files?.[0];
 					if (photoFile) {
 						try {
-							const dataUrl = await readFileAsDataUrl(photoFile);
-							await finalizeUpdate(dataUrl);
+							const photoUrl = await uploadPhotoToStorage(photoFile, existingEvent.id);
+							await finalizeUpdate(photoUrl);
 						} catch (error) {
 							console.warn('Photo upload failed', error);
-							setTimelineMessage('Photo could not be read. Try a smaller image.');
+							setTimelineMessage('Photo could not be uploaded. Try a smaller image.');
 						}
 					} else {
 						await finalizeUpdate(null);
@@ -1583,8 +1601,8 @@
 						photo: null
 					};
 
-					const finalizeSave = async (photoData) => {
-						newEvent.photo = photoData || null;
+					const finalizeSave = async (photoUrl) => {
+						newEvent.photo = photoUrl || null;
 						timelineEvents.push(newEvent);
 						
 						// Save the new event individually to Firestore if Firebase is initialized
@@ -1603,7 +1621,7 @@
 							}
 						}
 						
-						// Also update localStorage
+						// Also update localStorage (with photo URL or base64)
 						try {
 							localStorage.setItem(timelineStorageKey, JSON.stringify(timelineEvents));
 						} catch (e) {
@@ -1620,11 +1638,11 @@
 					const photoFile = timelineEls.eventPhoto?.files?.[0];
 					if (photoFile) {
 						try {
-							const dataUrl = await readFileAsDataUrl(photoFile);
-							await finalizeSave(dataUrl);
+							const photoUrl = await uploadPhotoToStorage(photoFile, newEvent.id);
+							await finalizeSave(photoUrl);
 						} catch (error) {
 							console.warn('Photo upload failed', error);
-							setTimelineMessage('Photo could not be read. Try a smaller image.');
+							setTimelineMessage('Photo could not be uploaded. Try a smaller image.');
 						}
 					} else {
 						await finalizeSave(null);
