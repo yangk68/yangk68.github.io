@@ -1523,7 +1523,30 @@
 						if (photoData) {
 							existingEvent.photo = photoData;
 						}
-						await saveTimelineEvents();
+						
+						// Save the updated event individually to Firestore if Firebase is initialized
+						if (firebaseInitialized && db) {
+							try {
+								const docRef = db.collection('timeline-events').doc(existingEvent.id);
+								await docRef.set({
+									date: existingEvent.date,
+									title: existingEvent.title,
+									description: existingEvent.description || '',
+									photo: existingEvent.photo || null
+								});
+								console.log('Event updated in Firestore');
+							} catch (error) {
+								console.warn('Unable to update event in Firestore:', error);
+							}
+						}
+						
+						// Also update localStorage
+						try {
+							localStorage.setItem(timelineStorageKey, JSON.stringify(timelineEvents));
+						} catch (e) {
+							console.warn('LocalStorage save failed:', e);
+						}
+						
 						currentTimelineYear = new Date(existingEvent.date).getFullYear();
 						renderTimeline();
 						setTimelineMessage('Memory updated!');
@@ -1563,7 +1586,30 @@
 					const finalizeSave = async (photoData) => {
 						newEvent.photo = photoData || null;
 						timelineEvents.push(newEvent);
-						await saveTimelineEvents();
+						
+						// Save the new event individually to Firestore if Firebase is initialized
+						if (firebaseInitialized && db) {
+							try {
+								const docRef = db.collection('timeline-events').doc(newEvent.id);
+								await docRef.set({
+									date: newEvent.date,
+									title: newEvent.title,
+									description: newEvent.description || '',
+									photo: newEvent.photo || null
+								});
+								console.log('New event saved to Firestore');
+							} catch (error) {
+								console.warn('Unable to save new event to Firestore:', error);
+							}
+						}
+						
+						// Also update localStorage
+						try {
+							localStorage.setItem(timelineStorageKey, JSON.stringify(timelineEvents));
+						} catch (e) {
+							console.warn('LocalStorage save failed:', e);
+						}
+						
 						currentTimelineYear = new Date(newEvent.date).getFullYear();
 						renderTimeline();
 						setTimelineMessage('Memory saved!');
