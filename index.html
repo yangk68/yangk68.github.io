@@ -1107,6 +1107,11 @@
 			};
 
 			const normalizeDate = (date) => {
+				// Parse date string as local time, not UTC, to avoid timezone issues
+				if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+					const [year, month, day] = date.split('-').map(Number);
+					return new Date(year, month - 1, day, 0, 0, 0, 0);
+				}
 				const normalized = new Date(date);
 				normalized.setHours(0, 0, 0, 0);
 				return normalized;
@@ -1213,7 +1218,7 @@
 			const getYearList = () => {
 				let latestYear = todayYear;
 				timelineEvents.forEach((evt) => {
-					const year = new Date(evt.date).getFullYear();
+					const year = normalizeDate(evt.date).getFullYear();
 					if (!Number.isNaN(year)) {
 						latestYear = Math.max(latestYear, year);
 					}
@@ -1310,7 +1315,7 @@
 					title.textContent = evt.title;
 					const meta = document.createElement('p');
 					meta.className = 'event-meta';
-					meta.textContent = formatDisplayDate(new Date(evt.date));
+					meta.textContent = formatDisplayDate(normalizeDate(evt.date));
 					card.append(title, meta);
 					if (evt.photo) {
 						const img = document.createElement('img');
@@ -1378,15 +1383,15 @@
 				});
 
 				const yearEvents = timelineEvents
-					.filter((evt) => new Date(evt.date).getFullYear() === currentTimelineYear)
-					.sort((a, b) => new Date(a.date) - new Date(b.date));
+					.filter((evt) => normalizeDate(evt.date).getFullYear() === currentTimelineYear)
+					.sort((a, b) => normalizeDate(a.date) - normalizeDate(b.date));
 
 				const overlapThreshold = 8; // % distance to consider events too close
 				let lastPosition = -999;
 				let lastSide = 'right';
 
 				yearEvents.forEach((evt) => {
-					const date = new Date(evt.date);
+					const date = normalizeDate(evt.date);
 					if (date < start || date > end) {
 						return;
 					}
@@ -1447,7 +1452,7 @@
 				const targetMonth = dateObj.getMonth();
 				return timelineEvents.filter((evt) => {
 					if (excludeId && evt.id === excludeId) return false;
-					const evtDate = new Date(evt.date);
+					const evtDate = normalizeDate(evt.date);
 					return evtDate.getFullYear() === targetYear && evtDate.getMonth() === targetMonth;
 				}).length;
 			};
@@ -1565,7 +1570,7 @@
 							console.warn('LocalStorage save failed:', e);
 						}
 						
-						currentTimelineYear = new Date(existingEvent.date).getFullYear();
+						currentTimelineYear = normalizeDate(existingEvent.date).getFullYear();
 						renderTimeline();
 						setTimelineMessage('Memory updated!');
 						cancelEdit();
@@ -1628,7 +1633,7 @@
 							console.warn('LocalStorage save failed:', e);
 						}
 						
-						currentTimelineYear = new Date(newEvent.date).getFullYear();
+						currentTimelineYear = normalizeDate(newEvent.date).getFullYear();
 						renderTimeline();
 						setTimelineMessage('Memory saved!');
 						timelineEls.form.reset();
@@ -1661,7 +1666,7 @@
 			const showEventModal = (evt) => {
 				if (!modalEls.modal || !modalEls.title || !modalEls.date || !modalEls.body) return;
 				modalEls.title.textContent = evt.title;
-				modalEls.date.textContent = formatDisplayDate(new Date(evt.date));
+				modalEls.date.textContent = formatDisplayDate(normalizeDate(evt.date));
 				modalEls.body.innerHTML = '';
 				if (evt.photo) {
 					const img = document.createElement('img');
